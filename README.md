@@ -3,39 +3,11 @@
 # Attractive & Repulsive Trainig 
 Code implementation of paper, ART: Class-Incremental learning using Class-wise Flags
 
-# Prerequistes
+# Requirements
 1. pytorch, python : pytorch 1.7, python 3.8
 
-# Measures Definition
-1. Measure for the Easy / Hard
-<table align='center'>
-<tr align='center'>
-</tr>
-<tr>
-
-</tr>
-</table>
-
-2. Not yet
-<table align='center'>
-<tr align='center'>
-</tr>
-<tr>
-
-</tr>
-</table>
-
-3. Not yet
-<table align='center'>
-<tr align='center'>
-</tr>
-<tr>
-
-</tr>
-</table>
-
 # Dataset / Model
-1. Data / Model : Cifar100 / Resnet32
+1. Data(Model) : Cifar100(ResNet32), Tiny-ImageNet(WRN-16-2)
   <table> 
     <thead> 
      <tr> 
