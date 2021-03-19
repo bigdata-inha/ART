@@ -4,7 +4,7 @@
 Code implementation of paper, ART: Class-Incremental learning using Class-wise Flags
 
 # Prerequistes
-1. pytorch, python : pytorch 1.7 ↑, python 3.7 ↑
+1. pytorch, python : pytorch 1.7, python 3.8
 
 # Measures Definition
 1. Measure for the Easy / Hard
