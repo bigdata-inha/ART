@@ -6,8 +6,8 @@ Code implementation of paper, ART: Class-Incremental learning using Class-wise F
 # Requirements
 1. pytorch, python : pytorch 1.7, python 3.8
 
-# Dataset / Model
-1. Data(Model) : Cifar100(ResNet32), Tiny-ImageNet(WRN-16-2)
+# Experimental Result
+1. Data(Model) : Cifar100(ResNet32)
   <table> 
     <thead> 
      <tr> 
@@ -48,12 +48,10 @@ Code implementation of paper, ART: Class-Incremental learning using Class-wise F
 </table>
 
 
-2. Data / Model : Imagenet / ResNet18
+2. Data(Model) : , Tiny-ImageNet(WRN-16-2)
 
 
-# Experiment Result
-1. Neuron Membership 
-
-2. Major class actvation - Minor class activation 
-
-3. Class Selectivity
+# Figure
+1. Cosine similarity between classes on feature space
+1.1. CIFAR-10
+1.2. CIFAR-100
