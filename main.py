@@ -1,5 +1,4 @@
 import argparse
-from trainer.train import *
 from models.model_resnet import *
 from models.model_resnet18 import *
 import myData.iDataset
@@ -10,10 +9,10 @@ import trainer.trainer_warehouse
 import trainer.evaluator
 from arguments import *
 from myData.data_warehouse import *
-from models.model_Wresnet import *
+from models.W_resnet import *
 import torch.optim as optim
 
-#parser.add_argument("")
+
 args = get_args()
 
 #seed
@@ -21,7 +20,7 @@ seed = args.seed
 set_seed(seed)
 
 #set gpu
-GPU_NUM = args.GPU_NUM  # 원하는 GPU 번호 입력
+GPU_NUM = 0  # 원하는 GPU 번호 입력
 device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
 
 torch.cuda.set_device(device)
@@ -36,7 +35,8 @@ if device.type == 'cuda':
 data = DatasetWH
 dataset = data.get_dataset(args.dataset)
 
-shuffle_idx = shuffle(np.arange(dataset.classes), random_state=seed)
+#shuffle_idx = shuffle(np.arange(dataset.classes), random_state=seed)
+shuffle_idx = None
 
 tasknum = (dataset.classes - args.start_classes) // args.step_size + 1
 
@@ -55,7 +55,6 @@ train_dataset_loader = myData.iDataLoader.IncrementalLoader(dataset.train_data,
                                                             args.step_size,
                                                             args.memory_size,
                                                             'train',
-                                                            args = args,
                                                             transform=dataset.train_transform,
                                                             loader=loader,
                                                             shuffle_idx=shuffle_idx,
@@ -69,12 +68,11 @@ evaluate_dataset_loader = myData.iDataLoader.IncrementalLoader(dataset.train_dat
                                                             args.step_size,
                                                             args.memory_size,
                                                             'train',
-                                                            args=args,
                                                             transform=dataset.train_transform,
                                                             loader=loader,
                                                             shuffle_idx=shuffle_idx,
                                                             base_classes=args.start_classes,
-                                                            approach= "wa",
+                                                            approach= "ft",
                                                             )
 
 test_dataset_loader = myData.iDataLoader.IncrementalLoader(dataset.test_data,
@@ -83,7 +81,6 @@ test_dataset_loader = myData.iDataLoader.IncrementalLoader(dataset.test_data,
                                                             args.step_size,
                                                             args.memory_size,
                                                             'test',
-                                                           args = args,
                                                             transform=dataset.test_transform,
                                                             loader=loader,
                                                             shuffle_idx=shuffle_idx,
@@ -167,7 +164,7 @@ get_confidence = False
 task_error = []
 
 #################Get Into Incremental Learning!###############################
-print("datset : ", args.dataset, "| trainer : ", args.trainer, "| kdloss : ", args.KD, " | CCtriplet : ", args.CCtriplet)
+print("datset : ", args.dataset, "| trainer : ", args.trainer, "| kdloss : ", args.KD, " | triplet : ", args.triplet)
 for t in range(tasknum):
     get_confidence = False
 
@@ -179,7 +176,7 @@ for t in range(tasknum):
     myTrainer.update_frozen_model()
     myTrainer.setup_training(lr)
 
-    if t > 0: #make class correlation matrix
+    if t > 0 and args.triplet: #make class correlation matrix
         if args.dict_type == "softmax":
             myTrainer.make_class_dict()
 
@@ -187,7 +184,7 @@ for t in range(tasknum):
 
     for epoch in range(args.nepochs):
         myTrainer.update_lr(epoch, args.schedule)
-        myTrainer.train(epoch, triplet=args.CCtriplet)
+        myTrainer.train(epoch, triplet=args.triplet)
 
         if epoch % 5 == 4:
             if args.trainer == "icarl":
@@ -314,18 +311,18 @@ for t in range(tasknum):
     correct_list.append(correct)
     stat_list.append(stat)
 
-    if args.CCtriplet == True:
+    if args.triplet == True:
         torch.save(myNet.state_dict(),
                    './checkpoint/comparasion/' + 'base_{}_{}_tri{}_trilam{}_newWA{}_{}_{}_{}.pt'.format(args.trainer,
                                                                                                      args.dataset,
-                                                                                                     args.CCtriplet,
+                                                                                                     args.triplet,
                                                                                                      args.triplet_lam,
                                                                                                      args.new_WA,
                                                                                                      tasknum, t, args.model))
     else:
         torch.save(myNet.state_dict(),
-                   './checkpoint/comparasion/' + 'base_{}_{}_tri{}_newWA{}_{}_{}_{}.pt'.format(args.trainer, args.dataset,
-                                                                                            args.CCtriplet, args.new_WA,
+                   './checkpoint/comparasion/' + '20_base_{}_{}_tri{}_newWA{}_{}_{}_{}.pt'.format(args.trainer, args.dataset,
+                                                                                            args.triplet, args.new_WA,
                                                                                             tasknum, t, args.model))
 
     myTrainer.increment_classes(mode="Bal", bal="None", memory_mode=None)
@@ -357,85 +354,3 @@ for i in range(tasknum):
     else:
         print(correct_list[i]["intra_pre"], " ", correct_list[i]["intra_new"], " ", correct_list[i]["pre"], " ",
               correct_list[i]["new"], " ", correct_list[i]["task_id_correct"])
-
-'''
-for i in range(args.step_size):
-    trainer.beforeTrain()
-    accuracy = trainer.train(i)
-    trainer.afterTrain()
-    
-'''
-
-'''
- if args.step_size < 5  :
-     if t > 0:
-         train_1 = myEvaluator.evaluate_top1(myTrainer.model, test_iterator, 0, train_end)
-         print("*********CURRENT EPOCH********** : %d" % epoch)
-         print("Train Classifier top-1 (Softmax): %0.2f" % train_1)
-         #print("Train Classifier top-5 (Softmax): %0.2f" % train_5)
-
-         correct, stat = myEvaluator.evaluate_top1(myTrainer.model, test_iterator,
-                                                      test_start, test_end,
-                                                      mode='test', step_size=args.step_size)
-
-         print("Test Classifier top-1 (Softmax, all): %0.2f" % correct['all'])
-
-         print("Test Classifier top-1 (Softmax, prev_new): %0.2f" % correct['prev_new'])
-
-
-         for head in ['all', 'prev_new', 'task']:
-             results[head]['correct'].append(correct[head])
-             #results[head]['correct_5'].append(correct_5[head])
-             results[head]['stat'].append(stat[head])
-
-     else:
-         ###################### 폐기처분 대상 ######################
-         train_1 = myEvaluator.evaluate_top1(myTrainer.model, train_iterator, 0, train_end)
-         print("*********CURRENT EPOCH********** : %d" % epoch)
-         print("Train Classifier top-1 (Softmax): %0.2f" % train_1)
-
-         test_1 = myEvaluator.evaluate_top1(myTrainer.model, test_iterator, test_start, test_end,
-                                                mode='test', step_size=args.step_size)
-         print("Test Classifier top-1 (Softmax): %0.2f" % test_1)
-
-
-         for head in ['all', 'prev_new', 'task', 'cheat']:
-             results[head]['correct'].append(test_1)
-
- else :
-     if t > 0:
-         train_1, train_5 = myEvaluator.evaluate(myTrainer.model, test_iterator, 0, train_end)
-         print("*********CURRENT EPOCH********** : %d" % epoch)
-         print("Train Classifier top-1 (Softmax): %0.2f" % train_1)
-         print("Train Classifier top-5 (Softmax): %0.2f" % train_5)
-
-         correct, correct_5, stat = myEvaluator.evaluate(myTrainer.model, test_iterator,
-                                                         test_start, test_end,
-                                                         mode='test', step_size=args.step_size)
-
-         print("Test Classifier top-1 (Softmax, all): %0.2f" % correct['all'])
-         print("Test Classifier top-5 (Softmax, all): %0.2f" % correct_5['all'])
-         print("Test Classifier top-1 (Softmax, prev_new): %0.2f" % correct['prev_new'])
-         print("Test Classifier top-5 (Softmax, prev_new): %0.2f" % correct_5['prev_new'])
-
-         for head in ['all', 'prev_new', 'task']:
-             results[head]['correct'].append(correct[head])
-             results[head]['correct_5'].append(correct_5[head])
-             results[head]['stat'].append(stat[head])
-
-     else:
-         ###################### 폐기처분 대상 ######################
-         train_1, train_5 = myEvaluator.evaluate(myTrainer.model, train_iterator, 0, train_end)
-         print("*********CURRENT EPOCH********** : %d" % epoch)
-         print("Train Classifier top-1 (Softmax): %0.2f" % train_1)
-         print("Train Classifier top-5 (Softmax): %0.2f" % train_5)
-
-         test_1, test_5 = myEvaluator.evaluate(myTrainer.model, test_iterator, test_start, test_end,
-                                               mode='test', step_size=args.step_size)
-         print("Test Classifier top-1 (Softmax): %0.2f" % test_1)
-         print("Test Classifier top-5 (Softmax): %0.2f" % test_5)
-
-         for head in ['all', 'prev_new', 'task', 'cheat']:
-             results[head]['correct'].append(test_1)
-             results[head]['correct_5'].append(test_5)
- '''

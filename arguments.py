@@ -7,7 +7,7 @@ def get_args():
     parser.add_argument("--lr", default=0.1, type=float, \
                         help="optimizer learning rate")
 
-    parser.add_argument("--memory_size", default=2000, type=int, \
+    parser.add_argument("--memory_size", default=200, type=int, \
                         help="exemplar set memory size")
 
     parser.add_argument("--nepochs", default=50, type=int, \
@@ -44,8 +44,10 @@ def get_args():
 
     parser.add_argument("--KD", default="naive_global", choices = ['naive_local', 'naive_global', "No"], type=str, help ="which distillation")
 
-    parser.add_argument("--trainer", default="vanilla", choices=["vanilla", "wa", 'icarl', 'eeil' "CTL"],
-                        type=str, help="which Algorithm use?")
+    parser.add_argument("--trainer", default="vanilla", choices=["vanilla", "wa", 'icarl', 'eeil' "CTL", "bic"],
+                        type=str, help="which CIL method use?")
+
+    parser.add_argument('--triplet', default=False, type=bool, help ='cctriplet or none')
 
     parser.add_argument('--margin', default=0.5, type=float,
                         help='distance margin for tripelt loss')
@@ -53,13 +55,11 @@ def get_args():
     parser.add_argument('--triplet_lam', default=1, type=float,
                         help = 'ratio of triplet loss')
 
-    parser.add_argument('--CCtriplet', default=True, type=bool, help ='cctriplet or none')
-
     parser.add_argument('--dict_type', default = "softmax", choices=["softmax", 'cosine'], help="which metric to define dictionary")
 
     parser.add_argument('--dict_update', default=True, type=bool,
                         help="whether update dictionary or not")
-    
+
     parser.add_argument('--new_WA', default="False", type=bool,
                         help="wheter use new WA")
 
