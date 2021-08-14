@@ -9,7 +9,7 @@ Code implementation of paper, ART: Class-Incremental learning using Class-wise F
 2. For visualization : run figure_cifar10.ipynb and figure_cifar100.ipynb
 
 # Detailed Experimental Results
-1. CIFAR 100 Accuracy
+## 1. CIFAR 100 Accuracy
 
 1.1 CIFAR 100 / 5 incrmental task
 
