@@ -12,6 +12,7 @@ Code implementation of paper, ART: Class-Incremental learning using Class-wise F
 
 # Detailed Experimental Results
 1. CIFAR 100 / 5 incrmental task
+
 |         | 20    | 40     | 60      | 80      | 100   | Average |
 |---------|-------|--------|---------|---------|-------|---------|
 | r+kd    | 88.4  | 74.125 | 61.4    | 52.1375 | 43.24 | 63.86   |
