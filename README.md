@@ -1,5 +1,3 @@
-# ART 
-
 # Attractive & Repulsive Trainig 
 Code implementation of paper, ART: Class-Incremental learning using Class-wise Flags
 
