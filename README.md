@@ -1,5 +1,6 @@
 # Attractive & Repulsive Trainig 
-Code implementation of paper, ART: Class-Incremental learning using Class-wise Flags
+Code implementation for the following article
+Attractive and Repulsive Training to Address Inter-Task Forgetting Issues in Continual Learning, Neurocomputing, 2022
 
 # Requirements
 1. pytorch, python : pytorch 1.7, python 3.8
