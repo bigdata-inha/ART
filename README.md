@@ -1,5 +1,6 @@
 # Attractive & Repulsive Trainig 
-Code implementation for the following article
+Code implementation for the following article:
+
 Attractive and Repulsive Training to Address Inter-Task Forgetting Issues in Continual Learning, Neurocomputing, 2022
 
 # Requirements
