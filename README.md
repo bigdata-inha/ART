@@ -1,7 +1,7 @@
 # Attractive & Repulsive Trainig 
 Code implementation for the following article:
 
-Attractive and Repulsive Training to Address Inter-Task Forgetting Issues in Continual Learning, Neurocomputing, 2022
+Attractive and Repulsive Training to Address Inter-Task Forgetting Issues in Continual Learning, Hong-Jun Choi and Dong-Wan Choi, Neurocomputing, 2022
 
 # Requirements
 1. pytorch, python : pytorch 1.7, python 3.8
